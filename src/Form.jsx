@@ -1,28 +1,22 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+
 import { useState } from 'react';
-import customFetch from './Utils';
-import { toast } from 'react-toastify';
+import { useCreateTasks } from './ReactQueryCustomHooks';
+
+
 
 const Form = () => {
   const [newItemName, setNewItemName] = useState('');
-  // react query
-  const queryClient = useQueryClient();
-  const {mutate:createTask,isLoading} = useMutation({
-    mutationFn: (taskTitle)=>customFetch.post('/',{title:taskTitle}),
-    onSuccess: ()=>{
-      queryClient.invalidateQueries({queryKey:['tasks']}),
-      toast.success("Task Added Successfully")
-      setNewItemName("")
-    },
-    onError: (error)=>{
-      toast.error(error.response.data.msg)
-    }
-  })
+  
 // console.log(result)
+const{isLoading,createTask} = useCreateTasks();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    createTask(newItemName)
+    createTask(newItemName,{
+      onSuccess: ()=>{
+        setNewItemName("")
+      }
+    })
   };
   return (
     <form onSubmit={handleSubmit}>
